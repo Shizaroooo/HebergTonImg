@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>HebergTonImg 📸</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --secondary: #6366f1;
+      --background: #f9fafb;
+      --card: #ffffff;
+      --text: #111827;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 30px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeInDown 1s ease;
+    }
+
+    .upload-card {
+      background: var(--card);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      border-radius: 16px;
+      padding: 40px 50px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeInUp 1s ease;
+    }
+
+    .upload-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    input[type=file] {
+      display: none;
+    }
+
+    .upload-label {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f3f4f6;
+      border: 2px dashed var(--secondary);
+      border-radius: 12px;
+      padding: 30px;
+      width: 250px;
+      cursor: pointer;
+      transition: background 0.3s ease, border 0.3s ease;
+    }
+
+    .upload-label:hover {
+      background: #eef2ff;
+      border-color: var(--primary);
+    }
+
+    .upload-label svg {
+      width: 60px;
+      height: 60px;
+      fill: var(--primary);
+      margin-bottom: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .upload-label:hover svg {
+      transform: scale(1.1);
+    }
+
+    button {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+    }
+
+    .result {
+      margin-top: 30px;
+      font-size: 1rem;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .result img {
+      margin-top: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease;
+    }
+
+    .result img:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>HebergTonImg 📸</h1>
+
+  <div class="upload-card">
+    <form id="uploadForm">
+      <label for="image" class="upload-label" id="label">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M12 16v-8m0 0l-3 3m3-3l3 3M4 16v2a2 2 0 002 2h12a2 
+          2 0 002-2v-2M16 8h2a2 2 0 012 2v4m-4-6h-2a2 2 0 
+          00-2 2v4m-4-6H6a2 2 0 00-2 2v4" stroke="currentColor" 
+          stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Choisir une image</span>
+      </label>
+      <input type="file" name="image" id="image" accept="image/*" required>
+      <br>
+      <button type="submit">Uploader 🚀</button>
+    </form>
+  </div>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const result = document.getElementById('result');
+    const fileInput = document.getElementById('image');
+    const label = document.getElementById('label');
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        label.querySelector('span').textContent = fileInput.files[0].name;
+      } else {
+        label.querySelector('span').textContent = 'Choisir une image';
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      result.innerHTML = "<p>⏳ Envoi en cours...</p>";
+
+      try {
+        const res = await fetch('/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.success) {
+          result.innerHTML = `
+            <p style="color: var(--success); font-weight: bold;">✅ Upload réussi !</p>
+            <a href="${data.url}" target="_blank">${data.url}</a>
+            <br><img src="${data.url}" width="250">
+          `;
+        } else {
+          throw new Error('Erreur upload');
+        }
+      } catch {
+        result.innerHTML = `<p style="color: var(--error); font-weight: bold;">❌ Erreur lors de l’upload</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

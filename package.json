@@ -1,0 +1,20 @@
+{
+  "name": "hebergetonimg",
+  "version": "1.0.0",
+  "description": "Site pour héberger des images rapidement et facilement",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "Shizaro",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
