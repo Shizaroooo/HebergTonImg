@@ -6,6 +6,7 @@
   "routes": [
     { "src": "/upload", "dest": "/api/upload.js" },
     { "src": "/i/(.*)", "dest": "/api/upload.js" },
-    { "src": "/(.*)", "dest": "/public/$1" }
+    { "src": "/", "dest": "/public/index.html" },   
+    { "src": "/(.*)", "dest": "/public/$1" }       
   ]
 }
