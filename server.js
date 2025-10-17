@@ -3,7 +3,6 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import fetch from 'node-fetch'; // nécessaire pour le ping
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,12 +51,13 @@ app.get('/i/:id', (req, res) => {
 const pingSelf = async () => {
   try {
     const url = `${process.env.SELF_URL || `http://localhost:${PORT}`}`;
-    const res = await fetch(url);
+    const res = await fetch(url); // Node 18+ : fetch est natif
     console.log(`✅ Ping auto à ${new Date().toLocaleTimeString()} - Status: ${res.status}`);
   } catch (err) {
     console.error('❌ Ping auto échoué:', err.message);
   }
 };
+
 
 // Ping toutes les 5 minutes
 setInterval(pingSelf, 5 * 60 * 1000);
